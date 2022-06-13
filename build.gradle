@@ -1,0 +1,49 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group 'dev.vankka'
+version '1.0.0-SNAPSHOT'
+
+targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.24.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testAnnotationProcessor rootProject
+}
+
+
+task runtimeJar(type: Jar) {
+    from(files(sourceSets.main.output)) {
+        exclude 'com/github/javaparser/**'
+        exclude 'dev/vankka/dynamicproxy/processor/**'
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
+    archiveClassifier = 'runtime'
+}
+
+jar {
+    dependsOn runtimeJar
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = 'dynamicproxy'
+            from components.java
+            artifact runtimeJar
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
