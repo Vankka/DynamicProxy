@@ -1,6 +1,8 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id 'signing'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 }
 
 group 'dev.vankka'
@@ -31,7 +33,11 @@ task runtimeJar(type: Jar) {
 }
 
 jar {
-    dependsOn runtimeJar
+    finalizedBy runtimeJar
+}
+
+test {
+    useJUnitPlatform()
 }
 
 publishing {
@@ -44,6 +50,22 @@ publishing {
     }
 }
 
-test {
-    useJUnitPlatform()
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri('https://s01.oss.sonatype.org/service/local/'))
+            snapshotRepositoryUrl.set(uri('https://s01.oss.sonatype.org/content/repositories/snapshots/'))
+        }
+    }
+}
+
+if (System.getenv('SIGNING_KEY') != null || project.hasProperty("signing.keyId")) {
+    signing {
+        sign publishing.publications.maven
+
+        def key = System.getenv('SIGNING_KEY')
+        if (key != null) {
+            useInMemoryPgpKeys(key, System.getenv('SIGNING_KEY_PASS'))
+        }
+    }
 }
