@@ -144,7 +144,6 @@ public class DynamicProxyProcessor extends AbstractProcessor {
         String proxyTypeName = ((TypeElement) (((DeclaredType) typeMirror).asElement())).getQualifiedName().toString();
 
         String finalOriginalField = originalField;
-        System.out.println("pre: " + compilationUnit);
 
         compilationUnit.accept(new ModifierVisitor<Void>() {
 
@@ -273,9 +272,6 @@ public class DynamicProxyProcessor extends AbstractProcessor {
                 return super.visit(n, arg);
             }
         }, null);
-
-        System.out.println("end: " + compilationUnit + " (" + compilationUnit.getChildNodes().stream().map(no -> no.getClass().getName()).collect(
-                Collectors.joining(", ")) + ")");
 
         String code;
         try {
