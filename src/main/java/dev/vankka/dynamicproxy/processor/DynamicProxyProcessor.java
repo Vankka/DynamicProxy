@@ -99,6 +99,37 @@ public class DynamicProxyProcessor extends AbstractProcessor {
             return;
         }
 
+        String originalField = null;
+        if (!(element instanceof TypeElement) || !element.getModifiers().contains(javax.lang.model.element.Modifier.ABSTRACT)) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Must be an abstract class", element);
+            return;
+        }
+
+        for (Element enclosedElement : element.getEnclosedElements()) {
+            if (enclosedElement.getKind() != ElementKind.FIELD) {
+                continue;
+            }
+            if (enclosedElement.getAnnotation(Original.class) == null) {
+                continue;
+            }
+            if (!processingEnv.getTypeUtils().isAssignable(typeMirror, enclosedElement.asType())) {
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "@Original needs to be assignable to " + typeMirror, enclosedElement);
+                return;
+            }
+            if (originalField != null) {
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Duplicate @Original field", enclosedElement);
+                return;
+            }
+
+            originalField = enclosedElement.getSimpleName().toString();
+        }
+
+        TypeElement superClass = (TypeElement) (((DeclaredType) ((TypeElement) element).getSuperclass()).asElement());
+        if (!superClass.getQualifiedName().toString().equals(Object.class.getName())) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Cannot be used on subclasses", element);
+            return;
+        }
+
         JavaFileObject object = trees.getPath(element)
                 .getCompilationUnit()
                 .getSourceFile();
@@ -120,27 +151,6 @@ public class DynamicProxyProcessor extends AbstractProcessor {
             return;
         }
 
-        String originalField = null;
-        if (element instanceof TypeElement) {
-            for (Element enclosedElement : element.getEnclosedElements()) {
-                if (enclosedElement.getKind() != ElementKind.FIELD) {
-                    continue;
-                }
-                if (enclosedElement.getAnnotation(Original.class) == null) {
-                    continue;
-                }
-                if (!processingEnv.getTypeUtils().isAssignable(typeMirror, enclosedElement.asType())) {
-                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "@Original needs to be assignable to " + typeMirror, enclosedElement);
-                    return;
-                }
-                if (originalField != null) {
-                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Duplicate @Original field", enclosedElement);
-                    return;
-                }
-
-                originalField = enclosedElement.getSimpleName().toString();
-            }
-        }
         String originalFieldName = originalField != null ? "this." + originalField : "original";
 
         String packageName = processingEnv.getElementUtils().getPackageOf(element).getQualifiedName().toString();

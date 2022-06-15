@@ -1,5 +1,7 @@
 package dev.vankka.dynamicproxy;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -27,7 +29,7 @@ public final class CallOriginal {
      * @param <T> the return type
      */
     @SuppressWarnings("unchecked")
-    public static <T> T call(Object... arguments) {
+    public static <T> T call(@NotNull Object... arguments) {
         Entry pair = METHOD.get();
         if (pair == null) {
             throw new IllegalArgumentException("Not in proxy method.");

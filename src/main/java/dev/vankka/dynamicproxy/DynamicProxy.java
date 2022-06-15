@@ -1,5 +1,7 @@
 package dev.vankka.dynamicproxy;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,14 +12,15 @@ public class DynamicProxy {
 
     private final Map<String, List<Method>> methods = new HashMap<>();
 
-    public DynamicProxy(Class<?> proxyType) {
+    public DynamicProxy(@NotNull Class<?> proxyType) {
         for (Method method : proxyType.getDeclaredMethods()) {
             methods.computeIfAbsent(method.getName(), key -> new ArrayList<>()).add(method);
         }
     }
 
     @SuppressWarnings("unused") // Used by generated classes
-    public Object make(Object original, Object proxy) {
+    @NotNull
+    public Object make(@NotNull Object original, @NotNull Object proxy) {
         Class<?> originalClass = original.getClass();
         return Proxy.newProxyInstance(
                 originalClass.getClassLoader(),
