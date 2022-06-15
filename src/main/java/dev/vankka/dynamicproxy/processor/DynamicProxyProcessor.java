@@ -15,8 +15,9 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 import com.github.javaparser.ast.visitor.Visitable;
 import com.github.javaparser.printer.Printer;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ClassLoaderTypeSolver;
 import com.sun.source.util.Trees;
 import dev.vankka.dynamicproxy.DynamicProxy;
 
@@ -33,10 +34,11 @@ import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @SupportedAnnotationTypes("dev.vankka.dynamicproxy.processor.Proxy")
 public class DynamicProxyProcessor extends AbstractProcessor {
@@ -101,7 +103,10 @@ public class DynamicProxyProcessor extends AbstractProcessor {
                 .getCompilationUnit()
                 .getSourceFile();
 
-        JavaParser javaParser = new JavaParser(new ParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new ReflectionTypeSolver(false))));
+        JavaParser javaParser = new JavaParser(
+                new ParserConfiguration()
+                        .setSymbolResolver(new JavaSymbolSolver(new ClassLoaderTypeSolver(getClass().getClassLoader())))
+        );
         CompilationUnit compilationUnit;
         try (InputStream inputStream = object.openInputStream()) {
             ParseResult<CompilationUnit> parseResult = javaParser.parse(inputStream);
@@ -155,16 +160,19 @@ public class DynamicProxyProcessor extends AbstractProcessor {
 
             @Override
             public Visitable visit(final ClassOrInterfaceDeclaration n, final Void arg) {
-//                if (!n.getNameAsString().equals(originalName)) {
-//                    n.remove();
-//                    return super.visit(n, arg);
-//                } if (!n.getParentNode().filter(no -> no instanceof CompilationUnit).isPresent()) {
-//                    n.removeModifier(Modifier.Keyword.STATIC);
-//                    n.setParentNode(compilationUnit);
-//                }
+                // Only apply to parent class
+                if (n.getParentNode().orElse(null) != compilationUnit) {
+                    return super.visit(n, arg);
+                }
 
                 NodeList<AnnotationExpr> annotations = n.getAnnotations();
-                annotations.removeIf(annotation -> annotation.resolve().getQualifiedName().equals(Proxy.class.getName()));
+                annotations.removeIf(annotation -> {
+                    try {
+                        return annotation.resolve().getQualifiedName().equals(Proxy.class.getName());
+                    } catch (UnsolvedSymbolException ignored) {
+                        return false;
+                    }
+                });
                 n.setAnnotations(annotations);
                 n.setName(proxyName);
                 n.removeModifier(Modifier.Keyword.ABSTRACT);
@@ -251,6 +259,11 @@ public class DynamicProxyProcessor extends AbstractProcessor {
 
             @Override
             public Visitable visit(final ConstructorDeclaration n, final Void arg) {
+                // Only apply to parent class
+                if (n.getParentNode().flatMap(Node::getParentNode).orElse(null) != compilationUnit) {
+                    return super.visit(n, arg);
+                }
+
                 n.setName(proxyName);
                 n.getBody().accept(new ModifierVisitor<Void>() {
 
@@ -267,7 +280,13 @@ public class DynamicProxyProcessor extends AbstractProcessor {
             @Override
             public Visitable visit(MethodDeclaration n, Void arg) {
                 NodeList<AnnotationExpr> annotations = n.getAnnotations();
-                annotations.removeIf(annotation -> annotation.resolve().getQualifiedName().equals(Override.class.getName()));
+                annotations.removeIf(annotation -> {
+                    try {
+                        return annotation.resolve().getQualifiedName().equals(Override.class.getName());
+                    } catch (UnsolvedSymbolException ignored) {
+                        return false;
+                    }
+                });
                 n.setAnnotations(annotations);
                 return super.visit(n, arg);
             }
