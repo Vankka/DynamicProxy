@@ -33,10 +33,14 @@ public class DynamicProxy {
     }
 
     private void getAllInterfaces(Class<?> clazz, Set<Class<?>> interfaces) {
-        for (Class<?> theInterface : clazz.getInterfaces()) {
-            if (interfaces.add(theInterface)) {
-                getAllInterfaces(theInterface, interfaces);
+        while (clazz != null) {
+            for (Class<?> theInterface : clazz.getInterfaces()) {
+                if (interfaces.add(theInterface)) {
+                    getAllInterfaces(theInterface, interfaces);
+                }
             }
+
+            clazz = clazz.getSuperclass();
         }
     }
 
