@@ -22,9 +22,12 @@ public class DynamicProxy {
     @NotNull
     public Object make(@NotNull Object original, @NotNull Object proxy) {
         Class<?> originalClass = original.getClass();
+        List<Class<?>> classes = new ArrayList<>(Arrays.asList(originalClass.getInterfaces()));
+        classes.add(originalClass);
+
         return Proxy.newProxyInstance(
                 originalClass.getClassLoader(),
-                originalClass.getInterfaces(),
+                classes.toArray(new Class<?>[0]),
                 new Handler(original, proxy)
         );
     }
@@ -53,24 +56,21 @@ public class DynamicProxy {
                         continue;
                     }
 
-                    return invokeMethod(proxyMethod, method, args);
+                    return invokeMethod(proxyMethod, args);
                 }
             }
 
             return method.invoke(original, args);
         }
 
-        private Object invokeMethod(Method proxyMethod, Method method, Object[] args) {
+        private Object invokeMethod(Method proxyMethod, Object[] args) {
             try {
-                CallOriginal.METHOD.set(new CallOriginal.Entry(method, original));
                 proxyMethod.setAccessible(true);
                 return proxyMethod.invoke(proxy, args);
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             } catch (IllegalAccessException e) {
                 throw new InvocationError(e);
-            } finally {
-                CallOriginal.METHOD.remove();
             }
         }
     }

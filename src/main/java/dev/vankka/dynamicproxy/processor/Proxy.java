@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface Proxy {
 
     /**
-     * The interface to proxy.
+     * The <b>interface</b> to proxy.
      * @return the class to proxy
      */
     Class<?> value();
