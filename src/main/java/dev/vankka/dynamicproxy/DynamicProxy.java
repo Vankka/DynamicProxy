@@ -22,14 +22,22 @@ public class DynamicProxy {
     @NotNull
     public Object make(@NotNull Object original, @NotNull Object proxy) {
         Class<?> originalClass = original.getClass();
-        List<Class<?>> classes = new ArrayList<>(Arrays.asList(originalClass.getInterfaces()));
-        classes.add(originalClass);
+        Set<Class<?>> interfaces = new LinkedHashSet<>();
+        getAllInterfaces(original.getClass(), interfaces);
 
         return Proxy.newProxyInstance(
                 originalClass.getClassLoader(),
-                classes.toArray(new Class<?>[0]),
+                interfaces.toArray(new Class<?>[0]),
                 new Handler(original, proxy)
         );
+    }
+
+    private void getAllInterfaces(Class<?> clazz, Set<Class<?>> interfaces) {
+        for (Class<?> theInterface : clazz.getInterfaces()) {
+            if (interfaces.add(theInterface)) {
+                getAllInterfaces(theInterface, interfaces);
+            }
+        }
     }
 
     private class Handler implements InvocationHandler {
