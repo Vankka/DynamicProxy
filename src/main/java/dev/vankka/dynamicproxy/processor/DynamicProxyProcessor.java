@@ -66,9 +66,9 @@ public class DynamicProxyProcessor extends AbstractProcessor {
             // Better warning
             this.processingEnv.getMessager().printMessage(
                     Diagnostic.Kind.NOTE,
-                    "Supported source version '" + maximumVersion
-                            + "' from annotation processor '" + getClass().getName()
-                            + "' less than " + version);
+                    getClass().getName()
+                            + " only supports parsing of Java features up-to " + maximumVersion
+                            + " which is less than the current " + version);
             return version; // ignores the JVM error which usually just shows Gradle's TimeTrackingProcessor anyways
         } else {
             // Within supported range
