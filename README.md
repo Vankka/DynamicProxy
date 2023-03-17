@@ -1,6 +1,26 @@
 # DynamicProxy
 
+[![Maven Central](https://img.shields.io/maven-central/v/dev.vankka/dynamicproxy?label=release)](https://central.sonatype.com/search?q=g:dev.vankka%20a:dynamicproxy)
+[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dev.vankka/dependencydownload-runtime?label=dev&server=https%3A%2F%2Fs01.oss.sonatype.org)](https://s01.oss.sonatype.org/#view-repositories;snapshots~browsestorage~dev)
+
 Library to help with dynamically proxying Java interfaces
+
+## Dependency
+
+⚠️ Dependency info & additional build tool information is WIP
+
+### Gradle
+```groovy
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'dev.vankka:dynamicproxy:1.0.0'
+    runtimeOnly 'dev.vankka:dynamicproxy:1.0.0:runtime'
+    annotationProcessor 'dev.vankka:dynamicproxy:1.0.0'
+}
+```
 
 ## Example
 
