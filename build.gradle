@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'dev.vankka'
-version '1.0.0'
+version '1.0.1-SNAPSHOT'
 
 targetCompatibility = JavaVersion.VERSION_1_8
 sourceCompatibility = JavaVersion.VERSION_1_8
