@@ -33,6 +33,11 @@ task runtimeJar(type: Jar) {
     archiveClassifier = 'runtime'
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 jar {
     finalizedBy runtimeJar
 }
@@ -47,6 +52,32 @@ publishing {
             artifactId = 'dynamicproxy'
             from components.java
             artifact runtimeJar
+
+            pom {
+                name = 'dependencydownload-' + project.name
+                packaging = 'jar'
+                description = 'A helper library for creating dynamic proxies'
+                url = 'https://github.com/Vankka/DynamicProxy'
+
+                scm {
+                    connection = 'scm:git:https://github.com/Vankka/DynamicProxy.git'
+                    developerConnection = 'scm:git:https://github.com/Vankka/DynamicProxy.git'
+                    url = 'https://github.com/Vankka/DynamicProxy'
+                }
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://www.opensource.org/licenses/mit-license.php'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'Vankka'
+                    }
+                }
+            }
         }
     }
 }
