@@ -12,8 +12,8 @@ public class DynamicProxyTest {
 
     @Test
     public void interfaceTest() {
-        InterfaceTestDynamicProxy proxy = new InterfaceTestDynamicProxy();
-        InterfaceTest interfaceTest = proxy.getProxy(new InterfaceTestImpl());
+        InterfaceTestDynamicProxy proxy = new InterfaceTestDynamicProxy(new InterfaceTestImpl());
+        InterfaceTest interfaceTest = proxy.getProxy();
         assertTrue(interfaceTest.first());
         assertFalse(interfaceTest.second());
         assertFalse(interfaceTest.third());

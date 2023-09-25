@@ -1,13 +1,17 @@
 package dev.vankka.dynamicproxy.test.model;
 
-import dev.vankka.dynamicproxy.CallOriginal;
+import dev.vankka.dynamicproxy.processor.Original;
 import dev.vankka.dynamicproxy.processor.Proxy;
 
 @Proxy(InterfaceTest.class)
 public abstract class InterfaceTestDynamic implements InterfaceTest {
 
-    public InterfaceTestDynamic() {
+    @Original
+    private final InterfaceTest original;
+
+    public InterfaceTestDynamic(InterfaceTest original) {
         super();
+        this.original = original;
     }
 
     @Override
@@ -17,12 +21,11 @@ public abstract class InterfaceTestDynamic implements InterfaceTest {
 
     @Override
     public boolean third() {
-        return CallOriginal.call();
+        return original.third();
     }
 
     @Override
     public boolean fourth() {
-        CallOriginal.call();
         return true;
     }
 }
