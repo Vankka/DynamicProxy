@@ -17,7 +17,6 @@ import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ClassLoaderTypeSolver;
 import com.sun.source.util.Trees;
 import dev.vankka.dynamicproxy.DynamicProxy;
-import javassist.compiler.ast.FieldDecl;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -36,9 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
@@ -55,7 +51,7 @@ public class DynamicProxyProcessor extends AbstractProcessor {
         SourceVersion maximumVersion;
         try {
             // Based on the maximum version completely supported by the underlying parsing/generation library
-            maximumVersion = SourceVersion.valueOf("RELEASE_13");
+            maximumVersion = SourceVersion.valueOf("RELEASE_17");
         } catch (IllegalArgumentException ignored) {
             maximumVersion = SourceVersion.latestSupported();
         }
