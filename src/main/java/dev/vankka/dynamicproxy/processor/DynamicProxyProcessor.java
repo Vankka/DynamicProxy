@@ -51,7 +51,7 @@ public class DynamicProxyProcessor extends AbstractProcessor {
         SourceVersion maximumVersion;
         try {
             // Based on the maximum version completely supported by the underlying parsing/generation library
-            maximumVersion = SourceVersion.valueOf("RELEASE_17");
+            maximumVersion = SourceVersion.valueOf("RELEASE_21");
         } catch (IllegalArgumentException ignored) {
             maximumVersion = SourceVersion.latestSupported();
         }
