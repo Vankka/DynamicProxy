@@ -1,7 +1,7 @@
 # DynamicProxy
 
-[![Maven Central](https://img.shields.io/maven-central/v/dev.vankka/dynamicproxy?label=release)](https://central.sonatype.com/search?q=g:dev.vankka%20a:dynamicproxy)
-[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dev.vankka/dynamicproxy?label=dev&server=https%3A%2F%2Fs01.oss.sonatype.org)](https://s01.oss.sonatype.org/#view-repositories;snapshots~browsestorage~dev)
+[![Maven Central](https://img.shields.io/maven-central/v/dev.vankka/dynamicproxy?label=release)](https://central.sonatype.com/search?q=g%253Adev.vankka+dynamicproxy)
+[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dev.vankka/dynamicproxy?label=dev&server=https%3A%2F%2Fs01.oss.sonatype.org)](https://s01.oss.sonatype.org/#view-repositories;snapshots~browsestorage~dev/vankka)
 
 Library to help with dynamically proxying Java interfaces
 
