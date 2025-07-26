@@ -11,7 +11,7 @@ allprojects {
     apply plugin: 'net.kyori.indra.licenser.spotless'
 
     group 'dev.vankka'
-    version '1.0.1-SNAPSHOT'
+    version '1.0.1'
 
     repositories {
         mavenCentral()
